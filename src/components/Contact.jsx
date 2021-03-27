@@ -1,5 +1,4 @@
-import React from "react"
-import PropTypes from "prop-types"
+import React, { useState, useEffect } from "react"
 import { TextField, InputAdornment, Button } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
@@ -14,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   contactForm: {
-    // background: theme.palette.primary.main,
     width: "100vw",
     height: "67vh",
     borderRadius: "30px 30px",
@@ -44,8 +42,80 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Contact = (props) => {
+const Contact = () => {
+  const [formActive, setFormActive] = useState(false)
+  const [inputs, setInputs] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+  const { name, email, message } = inputs
+
+  const handleChange = (e) => {
+    console.log(e.target.name)
+    console.log(e.target.value)
+    setInputs({
+      ...inputs,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const [nameError, setNameError] = useState(false)
+  const [emailError, setEmailError] = useState(false)
+  const [messageError, setMessageError] = useState(false)
+
   const classes = useStyles()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log({
+      name,
+      email,
+      message,
+    })
+    if (isError() || !formActive) {
+      console.log("error!")
+      return
+    }
+    // TODO: send email
+    console.log("SUBMITTED!")
+    setInputs({ name: "", email: "", message: "" })
+    setFormActive(false)
+  }
+
+  const isError = () => {
+    // if (!name) setNameError(true)
+    // if (!email || !isEmail(email)) setEmailError(true)
+    // if (!message) setMessageError(true)
+    console.log("nameError:", nameError)
+    console.log("emailError:", emailError)
+    console.log("messageError:", messageError)
+    if (nameError || emailError || messageError) return true
+    return false
+  }
+
+  const isEmail = (email) => /^\S+@\S+$/.test(email)
+
+  useEffect(() => {
+    if (name || email || message) setFormActive(true)
+    if (formActive) {
+      if (!name) setNameError(true)
+      if (!email || !isEmail(email)) setEmailError(true)
+      if (!message) setMessageError(true)
+    }
+    if (name) setNameError(false)
+    if (isEmail(email)) setEmailError(false)
+    if (message) setMessageError(false)
+  }, [
+    formActive,
+    name,
+    email,
+    message,
+    setNameError,
+    setEmailError,
+    setMessageError,
+  ])
+
   return (
     <div className={classes.flexCenter}>
       <form className={classes.contactForm} autoComplete="off">
@@ -53,8 +123,12 @@ const Contact = (props) => {
           <TextField
             id="nameInput"
             className={classes.textInput}
+            value={name}
+            name="name"
             label="Name"
             required
+            error={nameError}
+            helperText={nameError ? "Name required." : ""}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -62,12 +136,17 @@ const Contact = (props) => {
                 </InputAdornment>
               ),
             }}
+            onChange={handleChange}
           />
           <TextField
             id="emailInput"
             className={classes.textInput}
+            value={email}
+            name="email"
             label="Email"
             required
+            error={emailError}
+            helperText={emailError ? "Valid email required." : ""}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -75,13 +154,19 @@ const Contact = (props) => {
                 </InputAdornment>
               ),
             }}
+            onChange={handleChange}
           />
           <TextField
             id="messageInput"
             className={classes.textInput}
+            value={message}
+            name="message"
             label="Your Message"
             multiline
             rowsMax={4}
+            required
+            error={messageError}
+            helperText={messageError ? "Message required." : ""}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -89,12 +174,13 @@ const Contact = (props) => {
                 </InputAdornment>
               ),
             }}
-            required
+            onChange={handleChange}
           />
           <Button
             className={classes.submitBtn}
             variant="contained"
             color="primary"
+            onClick={handleSubmit}
           >
             Submit
           </Button>
@@ -103,7 +189,5 @@ const Contact = (props) => {
     </div>
   )
 }
-
-Contact.propTypes = {}
 
 export default Contact

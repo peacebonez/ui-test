@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import { makeStyles } from "@material-ui/core/styles"
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline"
 
@@ -31,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Header = (props) => {
+const Header = () => {
   const classes = useStyles()
   return (
     <div className={classes.headerBox}>
@@ -40,7 +39,5 @@ const Header = (props) => {
     </div>
   )
 }
-
-Header.propTypes = {}
 
 export default Header
