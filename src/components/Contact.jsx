@@ -51,42 +51,38 @@ const Contact = () => {
   })
   const { name, email, message } = inputs
 
-  const handleChange = (e) => {
-    console.log(e.target.name)
-    console.log(e.target.value)
-    setInputs({
-      ...inputs,
-      [e.target.name]: e.target.value,
-    })
-  }
-
   const [nameError, setNameError] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [messageError, setMessageError] = useState(false)
 
   const classes = useStyles()
 
+  const handleChange = (e) => {
+    setInputs({
+      ...inputs,
+      [e.target.name]: e.target.value,
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
+    setErrors()
     console.log({
       name,
       email,
       message,
     })
-    if (isError() || !formActive) {
-      console.log("error!")
-      return
-    }
+    if (!name || !email || !message || !formActive) return
     // TODO: send email
     console.log("SUBMITTED!")
     setInputs({ name: "", email: "", message: "" })
     setFormActive(false)
   }
 
-  const isError = () => {
-    // if (!name) setNameError(true)
-    // if (!email || !isEmail(email)) setEmailError(true)
-    // if (!message) setMessageError(true)
+  const setErrors = () => {
+    if (!name) setNameError(true)
+    if (!email || !isEmail(email)) setEmailError(true)
+    if (!message) setMessageError(true)
     console.log("nameError:", nameError)
     console.log("emailError:", emailError)
     console.log("messageError:", messageError)
@@ -99,13 +95,10 @@ const Contact = () => {
   useEffect(() => {
     if (name || email || message) setFormActive(true)
     if (formActive) {
-      if (!name) setNameError(true)
-      if (!email || !isEmail(email)) setEmailError(true)
-      if (!message) setMessageError(true)
+      if (name) setNameError(false)
+      if (isEmail(email)) setEmailError(false)
+      if (message) setMessageError(false)
     }
-    if (name) setNameError(false)
-    if (isEmail(email)) setEmailError(false)
-    if (message) setMessageError(false)
   }, [
     formActive,
     name,
