@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import { MuiThemeProvider } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+import { theme } from "./themes/theme"
+import Contact from "./components/Contact"
+import Header from "./components/Header"
+const useStyles = makeStyles({
+  appMain: {
+    width: "100vw",
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+})
 
 function App() {
+  const classes = useStyles()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.appMain}>
+        <Header />
+        <Contact />
+      </div>
+    </MuiThemeProvider>
+  )
 }
 
-export default App;
+export default App
