@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react"
-import { TextField, InputAdornment, Button } from "@material-ui/core"
-import axios from "axios"
+import { TextField, InputAdornment, Button, Fade } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
 import EmailIcon from "@material-ui/icons/Email"
 import CreateIcon from "@material-ui/icons/Create"
+
+import ThankYou from "./ThankYou"
+import sendEmail from "../controllers/sendEmail"
 
 const useStyles = makeStyles((theme) => ({
   flexCenter: {
@@ -12,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: theme.spacing(-4),
   },
   contactForm: {
     width: "100vw",
@@ -33,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   submitBtn: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(6),
     padding: theme.spacing(1),
     width: "25vw",
     fontSize: 16,
@@ -41,9 +44,16 @@ const useStyles = makeStyles((theme) => ({
       width: "20vw",
     },
   },
+  errorText: {
+    fontStyle: "italic",
+    color: "#fff",
+    textShadow: "1px 1px 5px #000",
+  },
 }))
 
 const Contact = () => {
+  const classes = useStyles()
+
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
@@ -54,37 +64,14 @@ const Contact = () => {
   const [nameError, setNameError] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [messageError, setMessageError] = useState(false)
-
-  const classes = useStyles()
+  const [asyncError, setAsyncError] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleChange = (e) => {
     setInputs({
       ...inputs,
       [e.target.name]: e.target.value,
     })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrors()
-    if (!name || !email || !message) return
-
-    await axios.post(
-      "https://uil7u260td.execute-api.us-east-1.amazonaws.com/default/sendEmail",
-      {
-        toEmail: email,
-        subject: name,
-        message,
-      },
-      {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      }
-    )
-
-    setInputs({ name: "", email: "", message: "" })
   }
 
   const setErrors = () => {
@@ -94,6 +81,23 @@ const Contact = () => {
   }
 
   const isEmail = (email) => /^\S+@\S+$/.test(email)
+  const resetForm = () => setIsSubmitted(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setErrors()
+    if (!name || !email || !message) return
+
+    const res = await sendEmail(email, name, message)
+    console.log("res:", res)
+    if (!res || !res.data) {
+      setAsyncError(true)
+      return
+    }
+
+    setInputs({ name: "", email: "", message: "" })
+    setIsSubmitted(true)
+  }
 
   useEffect(() => {
     if (name) setNameError(false)
@@ -101,77 +105,94 @@ const Contact = () => {
     if (message) setMessageError(false)
   }, [name, email, message, setNameError, setEmailError, setMessageError])
 
-  return (
-    <div className={classes.flexCenter}>
-      <form className={classes.contactForm} autoComplete="off">
-        <div className={classes.inputWrapper}>
-          <TextField
-            id="nameInput"
-            className={classes.textInput}
-            value={name}
-            name="name"
-            label="Name"
-            required
-            error={nameError}
-            helperText={nameError ? "Name required." : ""}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountCircle />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleChange}
-          />
-          <TextField
-            id="emailInput"
-            className={classes.textInput}
-            value={email}
-            name="email"
-            label="Email"
-            required
-            error={emailError}
-            helperText={emailError ? "Valid email required." : ""}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleChange}
-          />
-          <TextField
-            id="messageInput"
-            className={classes.textInput}
-            value={message}
-            name="message"
-            label="Your Message"
-            multiline
-            rowsMax={4}
-            required
-            error={messageError}
-            helperText={messageError ? "Message required." : ""}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <CreateIcon />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleChange}
-          />
-          <Button
-            className={classes.submitBtn}
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
-    </div>
+  useEffect(() => {
+    if (asyncError) {
+      setTimeout(() => {
+        setAsyncError(false)
+      }, 4000)
+    }
+  })
+
+  return !isSubmitted ? (
+    <Fade in timeout={3000}>
+      <div className={classes.flexCenter}>
+        <form className={classes.contactForm} autoComplete="off">
+          <div className={classes.inputWrapper}>
+            <TextField
+              id="nameInput"
+              className={classes.textInput}
+              value={name}
+              name="name"
+              label="Name"
+              required
+              error={nameError}
+              helperText={nameError ? "Name required." : ""}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountCircle />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChange}
+            />
+            <TextField
+              id="emailInput"
+              className={classes.textInput}
+              value={email}
+              name="email"
+              label="Email"
+              required
+              error={emailError}
+              helperText={emailError ? "Valid email required." : ""}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChange}
+            />
+            <TextField
+              id="messageInput"
+              className={classes.textInput}
+              value={message}
+              name="message"
+              label="Your Message"
+              multiline
+              rowsMax={4}
+              required
+              error={messageError}
+              helperText={messageError ? "Message required." : ""}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CreateIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChange}
+            />
+            <Button
+              className={classes.submitBtn}
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+            {asyncError && (
+              <Fade in timeout={1000}>
+                <h1 className={classes.errorText}>Something went wrong!</h1>
+              </Fade>
+            )}
+          </div>
+        </form>
+      </div>
+    </Fade>
+  ) : (
+    <ThankYou resetForm={resetForm} />
   )
 }
 

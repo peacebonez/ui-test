@@ -1,5 +1,6 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
+import { Fade } from "@material-ui/core"
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline"
 
 const useStyles = makeStyles((theme) => ({
@@ -9,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
   },
   title: {
     marginTop: theme.spacing(-4),
@@ -33,10 +34,12 @@ const useStyles = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyles()
   return (
-    <div className={classes.headerBox}>
-      <ChatBubbleOutlineIcon className={classes.icon} />
-      <h1 className={classes.title}>Invite a friend!</h1>
-    </div>
+    <Fade in timeout={2000}>
+      <div className={classes.headerBox}>
+        <ChatBubbleOutlineIcon className={classes.icon} />
+        <h1 className={classes.title}>Invite a friend!</h1>
+      </div>
+    </Fade>
   )
 }
 
