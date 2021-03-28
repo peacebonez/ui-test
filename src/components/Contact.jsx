@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { TextField, InputAdornment, Button } from "@material-ui/core"
+import axios from "axios"
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
 import EmailIcon from "@material-ui/icons/Email"
@@ -43,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const Contact = () => {
-  const [formActive, setFormActive] = useState(false)
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
@@ -64,50 +64,42 @@ const Contact = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors()
-    console.log({
-      name,
-      email,
-      message,
-    })
-    if (!name || !email || !message || !formActive) return
-    // TODO: send email
-    console.log("SUBMITTED!")
+    if (!name || !email || !message) return
+
+    await axios.post(
+      "https://uil7u260td.execute-api.us-east-1.amazonaws.com/default/sendEmail",
+      {
+        toEmail: email,
+        subject: name,
+        message,
+      },
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+
     setInputs({ name: "", email: "", message: "" })
-    setFormActive(false)
   }
 
   const setErrors = () => {
     if (!name) setNameError(true)
     if (!email || !isEmail(email)) setEmailError(true)
     if (!message) setMessageError(true)
-    console.log("nameError:", nameError)
-    console.log("emailError:", emailError)
-    console.log("messageError:", messageError)
-    if (nameError || emailError || messageError) return true
-    return false
   }
 
   const isEmail = (email) => /^\S+@\S+$/.test(email)
 
   useEffect(() => {
-    if (name || email || message) setFormActive(true)
-    if (formActive) {
-      if (name) setNameError(false)
-      if (isEmail(email)) setEmailError(false)
-      if (message) setMessageError(false)
-    }
-  }, [
-    formActive,
-    name,
-    email,
-    message,
-    setNameError,
-    setEmailError,
-    setMessageError,
-  ])
+    if (name) setNameError(false)
+    if (isEmail(email)) setEmailError(false)
+    if (message) setMessageError(false)
+  }, [name, email, message, setNameError, setEmailError, setMessageError])
 
   return (
     <div className={classes.flexCenter}>

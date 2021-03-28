@@ -19,6 +19,12 @@ export const theme = createMuiTheme({
         fontSize: 18,
       },
     },
+    MuiFormHelperText: {
+      root: {
+        position: "absolute",
+        top: "5em",
+      },
+    },
   },
   typography: {
     fontFamily: '"Lato,sans-serif"',
