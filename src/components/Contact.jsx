@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: "italic",
     color: "#fff",
     textShadow: "1px 1px 5px #000",
+    fontFamily: theme.typography.fontFamily,
   },
 }))
 
@@ -89,7 +90,6 @@ const Contact = () => {
     if (!name || !email || !message) return
 
     const res = await sendEmail(email, name, message)
-    console.log("res:", res)
     if (!res || !res.data) {
       setAsyncError(true)
       return

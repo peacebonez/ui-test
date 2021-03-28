@@ -27,8 +27,9 @@ export const theme = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: '"Lato,sans-serif"',
+    fontFamily: "Arial",
     fontSize: 12,
+    fontWeight: 400,
   },
   palette: {
     primary: { main: "#0094CA", green: "#53A596", navy: "#232338" },

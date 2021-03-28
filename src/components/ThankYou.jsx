@@ -9,6 +9,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
+  title: {
+    fontFamily: theme.typography.fontFamily,
+  },
   thumb: {
     width: "30vw",
     height: "30vh",
@@ -31,7 +34,7 @@ const ThankYou = ({ resetForm }) => {
     <Fade in timeout={500}>
       <div className={classes.thanksBox}>
         <ThumbUpIcon className={classes.thumb} />
-        <h1>Invitation Success!</h1>
+        <h1 className={classes.title}>Invitation Success!</h1>
         <Button
           className={classes.inviteBtn}
           variant="contained"

@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     marginTop: theme.spacing(-4),
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: theme.typography.fontWeight,
+    fontStyle: "italic",
     [theme.breakpoints.up("md")]: {
       marginTop: theme.spacing(2),
     },
