@@ -90,7 +90,7 @@ const Contact = () => {
     if (!name || !email || !message) return
 
     const res = await sendEmail(email, name, message)
-    if (!res || !res.data) {
+    if (!res) {
       setAsyncError(true)
       return
     }

@@ -10,12 +10,14 @@ const sendEmail = async (email, name, message) => {
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
       }
     )
+    return true
   } catch (err) {
     console.log(err)
+    return false
   }
 }
 
